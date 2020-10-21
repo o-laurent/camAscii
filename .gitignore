@@ -1,0 +1,5 @@
+.vscode
+CMakeFiles
+images
+*.png
+cmake_install.cmake
