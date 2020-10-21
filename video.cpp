@@ -123,7 +123,7 @@ cv::Mat toASCII(cv::Mat src)
 
 int main(int argc, char *argv[])
 {
-    std::cout << argv[1] << std::endl;
+    // If no argument, take a picture
     if (argc == 1)
     {
         cv::Mat frame;
@@ -144,7 +144,7 @@ int main(int argc, char *argv[])
         }
         //--- GRAB AND WRITE LOOP
         std::cout << "Start grabbing" << std::endl
-                  << "Press any key to terminate" << std::endl;
+                  << "Press any key to take a picture" << std::endl;
         cv::Mat src;
         for (;;)
         {
@@ -166,15 +166,16 @@ int main(int argc, char *argv[])
         cap.read(frame);
         src = frame.clone();
         cv::Mat result = toASCII(src);
-        cv::imwrite("aaaaaaa.png", result);
+        cv::imwrite("picture.jpg", result);
         // the camera will be deinitialized automatically in VideoCapture destructor
         return 0;
     }
 
     else if (argc == 2)
     {
-        std::string liveOrImage(argv[1]);
-        if (liveOrImage == "live")
+        std::string liveOrPath(argv[1]);
+        // If live, print on the terminal
+        if (liveOrPath == "live")
         {
             cv::Mat frame;
             cv::VideoCapture cap;
@@ -200,6 +201,23 @@ int main(int argc, char *argv[])
                     break;
             }
             return 0;
+        }
+        // Else, search for an image
+        else
+        {
+
+            cv::Mat src = cv::imread(liveOrPath, cv::IMREAD_COLOR);
+            if (src.empty())
+            {
+                std::cout << "Could not read the image: " << liveOrPath << std::endl;
+                return 1;
+            }
+            cv::Mat result = toASCII(src);
+            std::string delimiter = ".";
+            std::string path = liveOrPath.substr(0, liveOrPath.find(delimiter));
+            std::string jpg(".jpg");
+            std::string ascii(".ascii");
+            cv::imwrite(path + ascii + jpg, result);
         }
     }
 }
